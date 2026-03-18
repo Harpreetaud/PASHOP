@@ -1,6 +1,4 @@
-import {Suspense} from 'react';
-import {Await, NavLink} from 'react-router';
-import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import type { FooterQuery, HeaderQuery } from 'storefrontapi.generated';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
@@ -14,116 +12,87 @@ export function Footer({
   publicStoreDomain,
 }: FooterProps) {
   return (
-    <Suspense>
-      <Await resolve={footerPromise}>
-        {(footer) => (
-          <footer className="footer">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
-          </footer>
-        )}
-      </Await>
-    </Suspense>
+    <footer className="footer">
+      <div className="footer-top">
+        <div className="footer-links-grid">
+          <div className="footer-col">
+            <div className="footer-title">Stores</div>
+            <a href="/stores">Find A Store</a>
+            <a href="/pa-plus">P.A. Plus Stores</a>
+            
+            <div className="footer-col-spacer"></div>
+            
+            <div className="footer-title">About Us</div>
+            <a href="/about">About Peter</a>
+            <a href="/history">Our History</a>
+            <a href="/charity">Our Charity</a>
+            <a href="/careers">Careers</a>
+            <a href="/better-practices">Better Practices</a>
+            <a href="/brand-protection">Brand Protection</a>
+          </div>
+
+          <div className="footer-col">
+            <div className="footer-title">Help &amp; Information</div>
+            <a href="/delivery">Delivery Information</a>
+            <a href="/track-order">Track Order</a>
+            <a href="/returns">Returns &amp; Exchanges</a>
+            <a href="/size">Size Guide</a>
+            <a href="/personalisation">Personalisation</a>
+            <a href="/gift-wrap">Gift Wrap</a>
+            <a href="/customer-notices">Customer Notices</a>
+            <a href="/contact">Help &amp; Contact Us</a>
+          </div>
+
+          <div className="footer-col">
+            <div className="footer-title">Gift Cards</div>
+            <a href="/gift-cards">Shop Gift Cards</a>
+            <a href="/balance-enquiry">Balance Enquiry</a>
+            <a href="/gift-card-help">Gift Card Help</a>
+
+            <div className="footer-col-spacer"></div>
+
+            <div className="footer-title">Peter's Dreamers</div>
+            <a href="/join">Join The Dreamers</a>
+            <a href="/rewards">About Membership &amp; Rewards</a>
+            <a href="/terms">Terms &amp; Conditions</a>
+          </div>
+
+          <div className="footer-right">
+            <div className="pa-footer-right-top">
+              <div>
+                <div className="footer-title">Get cosy with Peter</div>
+                <div className="footer-region pa-region">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className="footer-flag">
+                    <rect width="512" height="512" fill="#000080"/>
+                    <path fill="#fff" d="M0 0l512 512m0-512L0 512"/>
+                    <path fill="#f00" d="M0 0l512 512m0-512L0 512" stroke="#fff" strokeWidth="30"/>
+                    <path fill="#000080" d="M0 256h512v128H0zM256 0h128v512H256z"/>
+                    <path fill="#fff" d="M0 213h512v86H0zm213 0h86v512h-86z"/>
+                    <path fill="#f00" d="M0 230h512v52H0zm230 0h52v512h-52z"/>
+                    <circle fill="#fff" cx="128" cy="384" r="30"/>
+                  </svg>
+                  <span className="pa-region-text">Delivery Country <strong>Australia</strong></span>
+                </div>
+              </div>
+              <div className="footer-social-icons pa-social">
+                <a href="#" aria-label="Facebook">
+                  <svg className="footer-social-icon facebook-pa" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                </a>
+                <a href="#" aria-label="Instagram">
+                  <svg className="footer-social-icon instagram-pa" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+
+      <div className="footer-bottom">
+        <a href="/terms-of-use">Terms Of Use</a>
+        <span className="footer-bottom-divider">|</span>
+        <a href="/privacy">Privacy</a>
+      </div>
+    </footer>
   );
-}
-
-function FooterMenu({
-  menu,
-  primaryDomainUrl,
-  publicStoreDomain,
-}: {
-  menu: FooterQuery['menu'];
-  primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url'];
-  publicStoreDomain: string;
-}) {
-  return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
-        if (!item.url) return null;
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        const isExternal = !url.startsWith('/');
-        return isExternal ? (
-          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
-            {item.title}
-          </a>
-        ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
-        );
-      })}
-    </nav>
-  );
-}
-
-const FALLBACK_FOOTER_MENU = {
-  id: 'gid://shopify/Menu/199655620664',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461633060920',
-      resourceId: 'gid://shopify/ShopPolicy/23358046264',
-      tags: [],
-      title: 'Privacy Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/privacy-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633093688',
-      resourceId: 'gid://shopify/ShopPolicy/23358013496',
-      tags: [],
-      title: 'Refund Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/refund-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633126456',
-      resourceId: 'gid://shopify/ShopPolicy/23358111800',
-      tags: [],
-      title: 'Shipping Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/shipping-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633159224',
-      resourceId: 'gid://shopify/ShopPolicy/23358079032',
-      tags: [],
-      title: 'Terms of Service',
-      type: 'SHOP_POLICY',
-      url: '/policies/terms-of-service',
-      items: [],
-    },
-  ],
-};
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
-  };
 }
